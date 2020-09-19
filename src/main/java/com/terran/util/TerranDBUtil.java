@@ -36,9 +36,9 @@ public class TerranDBUtil {
 		try {
 			// db parameters
 			Class.forName("org.sqlite.JDBC");
-			String url = loadProp().getProperty("db.url");
+//			String url = loadProp().getProperty("db.url");
 			// create a connection to the database
-			conn = DriverManager.getConnection(url);
+			conn = DriverManager.getConnection("jdbc:sqlite::resource:countries.db");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}

@@ -23,6 +23,7 @@ public class TerranRestController {
     @GetMapping("/countries")
     @ApiOperation(value = "Get countries from DB")
 	public String getCountries() throws Exception {
+    	logger.info("Get countries from DB");
 		TerranController tc=new TerranController();
 		return tc.retrieveCountriesFromDB();
 	}
@@ -31,6 +32,7 @@ public class TerranRestController {
 	@GetMapping("/syncCountries")
 	@ApiOperation(value = "Get countries from External API")
 	public String synCountry() throws Exception {
+		logger.info("Sync country");
 		TerranController tc=new TerranController();
 		
 		return tc.syncCountries();
@@ -44,6 +46,7 @@ public class TerranRestController {
 		TerranController tc=new TerranController();
 		logger.info("insert or update country");
 		try {
+			logger.info("Encrypted User :" +user);
 			tc.decryptAES(user);
 			flag=true;
 		}catch(Exception e){

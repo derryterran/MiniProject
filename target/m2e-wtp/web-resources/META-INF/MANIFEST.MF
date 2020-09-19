@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Built-By: Derry Terran
+Build-Jdk: 11.0.7
+Implementation-Title: MiniProject
+Implementation-Version: 1.0
+Implementation-Vendor-Id: com.terran
+Implementation-URL: http://maven.apache.org
+Created-By: Maven Integration for Eclipse
+
