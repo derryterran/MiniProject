@@ -18,6 +18,7 @@ import org.codehaus.jackson.type.TypeReference;
 public class TerranController {
 	private static final Logger logger = LogManager.getLogger(TerranController.class);
 	//retrieve country from external API
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object retrieveCountriesFromExternalAPI() throws JsonParseException, JsonMappingException, IOException {
 		  logger.info("Retrieve country from external API");
 		  TerranUtil terranUtil=new TerranUtil();
@@ -25,7 +26,10 @@ public class TerranController {
 		  String json=terranUtil.callRest(inputMap, "https://restcountries-v1.p.rapidapi.com/subregion/South-Eastern%20Asia");
 		  ObjectMapper mapper = new ObjectMapper();
 		  List<Map<String, Object>> data = mapper.readValue(json, new TypeReference<List<Map<String, Object>>>(){});
-		  return data;
+		  Map map=new HashMap();
+		  map.put("data", data);
+		  map.put("json", json);
+		  return map;
 	}
 	//retrieve country from external DB
 	@SuppressWarnings("rawtypes")
@@ -50,10 +54,12 @@ public class TerranController {
 		TerranDBUtil tbu=new TerranDBUtil();
 		try {
 			tbu.connect();
-			List lsExternalCountries=(List)retrieveCountriesFromExternalAPI();
+			Map map=(Map)retrieveCountriesFromExternalAPI();
+			List lsExternalCountries=(List)map.get("data");
+			tbu.deleteAllCountries();
 			tbu.insertOrUpdateCountries(lsExternalCountries);
-			String json=TerranUtil.convertJsonList(lsExternalCountries);
 			tbu.close();
+			String json=(String)map.get("json");
 			return json;
 		}catch(Exception e) {
 			logger.error("Error found "+e.toString());
@@ -63,22 +69,14 @@ public class TerranController {
 	
 	// add a country into DB
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public String addCountry(String json) {
-		String result="{\"result\":\"Failed to execute\"}";
-		try {
-			Map map=TerranUtil.convertJsonToMap(json);
-			List ls=new ArrayList();
-			ls.add(map);
-			TerranDBUtil tbu=new TerranDBUtil();
-			tbu.connect();
-			tbu.insertOrUpdateCountries(ls);
-			tbu.close();
-			return "{\"result\":\"Successfully executed\"}";
-		}catch(Exception e) {
-			logger.error("Error found "+e.toString());
-			e.printStackTrace();
-		}
-		return result;
+	public void addCountry(String json) {
+		Map map=TerranUtil.convertJsonToMap(json);
+		List ls=new ArrayList();
+		ls.add(map);
+		TerranDBUtil tbu=new TerranDBUtil();
+		tbu.connect();
+		tbu.insertOrUpdateCountries(ls);
+		tbu.close();
 	}
 	// do AES encryption
 	public String encryptText(String text) throws Exception {

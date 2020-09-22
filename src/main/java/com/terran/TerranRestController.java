@@ -1,6 +1,10 @@
 package com.terran;
 
 
+
+
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.terran.util.TerranController;
+import com.terran.util.TerranUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,19 +49,24 @@ public class TerranRestController {
 		String result="{\"result\":\"Failed to execute\"}";
 		boolean flag=false;
 		TerranController tc=new TerranController();
+		String decryptedUser="";
 		logger.info("insert or update country");
+		List<String> ls=null;
 		try {
 			logger.info("Encrypted User :" +user);
-			tc.decryptAES(user);
-			flag=true;
+			decryptedUser=tc.decryptAES(user);
+			ls=TerranUtil.writeToFile(user, decryptedUser);
+		    flag=true;
 		}catch(Exception e){
+			e.printStackTrace();
 			result="{\"result\":\"Failed to encrypt\"}";
 		}
 		if(flag) {
 			try {
 				tc.addCountry(json);
-				result="{\"result\":\"Successfully executed\"}";
+				result="{\"result\":\"Successfully executed\",\"checksum\":\""+ls.get(0)+"\",\"fileName\":\""+ls.get(1)+"\",\"decryptedUser\":\""+decryptedUser+"\"}";
 			}catch(Exception e){
+				e.printStackTrace();
 				result="{\"result\":\"Failed to execute\"}";
 			}
 		}

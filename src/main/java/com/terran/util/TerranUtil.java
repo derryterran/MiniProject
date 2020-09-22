@@ -2,10 +2,20 @@ package com.terran.util;
 
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +24,51 @@ import javax.net.ssl.HttpsURLConnection;
 import org.codehaus.jackson.map.ObjectMapper;
 //util class to support project
 public class TerranUtil {
-	
+	@SuppressWarnings("rawtypes")
+	public String callRestCustom(Map content, String urli,String method) {
+		String result = "";
+		try {
+
+			URL url = new URL(urli);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(true);
+			conn.setRequestMethod(method);
+			conn.setRequestProperty("Content-Type", "application/json");
+			if(method.equals("POST")){
+				String input = "";
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				String json = "";
+				try {
+					json = objectMapper.writeValueAsString(content);
+					json = String.valueOf(json);
+					String s = json;
+					s = "" + s;
+					s = s.replaceAll("\\\\", "");
+					input = s;
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Error :" + e);
+				}
+
+				OutputStream os = conn.getOutputStream();
+				os.write(input.getBytes());
+				os.flush();
+			}
+			BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+			String output = "";
+			while ((output = br.readLine()) != null) {
+				result = result + output;
+			}
+			conn.disconnect();
+
+		} catch (Exception e) {
+			result = "Client service not found :" + urli + " - " + e;
+			e.printStackTrace();
+		}
+		return result;
+	}
 	//call rest web service
 	@SuppressWarnings("rawtypes")
 	public String callRest(Map content, String urli) {
@@ -95,4 +149,35 @@ public class TerranUtil {
         }
         return null;
 	}
+	//FileChecksum MD5
+	public static String checksum(String filepath, MessageDigest md) throws IOException {
+        try (InputStream fis = new FileInputStream(filepath)) {
+            byte[] buffer = new byte[1024];
+            int nread;
+            while ((nread = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, nread);
+            }
+        }
+        StringBuilder result = new StringBuilder();
+        for (byte b : md.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
+
+    }
+    public static List<String> writeToFile(String encUser,String decUser) throws IOException, NoSuchAlgorithmException {
+    	List<String> ls=new ArrayList<String>();
+    	SimpleDateFormat sdf=new SimpleDateFormat("dd-MM-yyyy");
+    	String destF=""+sdf.format(new Date())+".log";
+    	File f = new File(destF);
+		f.createNewFile();
+		FileWriter myWriter = new FileWriter(destF);
+		myWriter.write(encUser);
+		myWriter.close();
+		MessageDigest md = MessageDigest.getInstance("MD5");
+	    String hex = checksum(destF, md);
+	    ls.add(hex);
+	    ls.add(destF);
+	    return ls;
+    }
 }

@@ -53,18 +53,27 @@ public class TerranDBUtil {
 			System.out.println(ex.getMessage());
 		}
 	}
+	public void deleteAllCountries() {
+		try {
+			Statement stm = conn.createStatement();
+			stm.executeUpdate("DELETE FROM TB_COUNTRY_DETAIL");			
+			stm.executeUpdate("DELETE FROM TB_COUNTRY");
+			stm.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	//insert or update country
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void insertOrUpdateCountries(List countries) {
 		try {
 			Statement stm = conn.createStatement();
-
 			for (int i = 0; i < countries.size(); i++) {
 				Map<String, Object> map = (Map<String, Object>) countries.get(i);
 				String countryCode = (String) map.get("alpha2Code");
 				if (isCountryExist(countryCode) == false) {
 					String queryInsertHeader = "INSERT INTO TB_COUNTRY(COUNTRY_CD)VALUES('" + countryCode + "')";
-					stm.execute(queryInsertHeader);
+					stm.executeUpdate(queryInsertHeader);
 					for (Map.Entry<String, Object> entry : map.entrySet()) {
 						String val = "";
 						if (entry.getValue() != null) {
