@@ -1,9 +1,0 @@
-com\terran\util\TerranUtil.class
-com\terran\util\TerranCrypto.class
-com\terran\util\TerranEncDec.class
-com\terran\TerranRestController.class
-com\terran\util\TerranSwaggerConfig.class
-com\terran\util\TerranController.class
-com\terran\TerranBootWebApplication.class
-com\terran\util\TerranDBUtil.class
-com\terran\util\TerranController$1.class

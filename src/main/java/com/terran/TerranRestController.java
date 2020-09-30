@@ -73,4 +73,23 @@ public class TerranRestController {
 		
 		return result;
 	}
+	//This is rest service to request token
+		@PostMapping("/requestToken")
+		@ApiOperation(value = "Request Token")
+		public String requestToken(@RequestParam(name = "user") String user) throws Exception {
+			String result="{\"result\":\"Failed to execute\"}";
+			TerranController tc=new TerranController();
+			String encryptedUser="";
+			logger.info("Request Token");
+			try {
+				encryptedUser=tc.encryptText(user);
+				logger.info("Encrypted User :" +encryptedUser);
+				result="{\"result\":\""+encryptedUser+"\"}";
+			}catch(Exception e){
+				e.printStackTrace();
+				result="{\"result\":\"Failed to encrypt\"}";
+			}
+			
+			return result;
+		}
 }

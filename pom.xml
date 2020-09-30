@@ -103,24 +103,7 @@
 			<plugin>
 			    <groupId>org.apache.maven.plugins</groupId>
 			    <artifactId>maven-dependency-plugin</artifactId>
-			    <executions>
-			        <execution>
-			            <id>unpack</id>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>unpack</goal>
-			            </goals>
-			            <configuration>
-			                <artifactItems>
-			                    <artifactItem>
-			                        <groupId>com.terran</groupId>
-			                        <artifactId>MiniProject</artifactId>
-			                        <version>1.0</version>
-			                    </artifactItem>
-			                </artifactItems>
-			            </configuration>
-			        </execution>
-			    </executions>
+			    
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
