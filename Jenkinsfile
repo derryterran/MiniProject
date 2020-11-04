@@ -1,9 +1,7 @@
 #!/usr/bin/groovy
-  stages {
-    stage('Build') {
-      steps {
-        echo 'Hello world!'
-		 cmd_exec('zip -r ../bundle.zip MiniProject')
-      }
-    }
+node { 
+  stage('Build') {
+    echo 'Hello World'
+	 cmd_exec('zip -r ../bundle.zip dist')
   }
+} 
